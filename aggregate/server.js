@@ -20,4 +20,4 @@ app.use('/graphql', express_graphql({
 }));
 app.listen(4000, () => console.log('Express GraphQL Server Now Running On localhost:4000/graphql'));
 
-//curl -X POST 'http://localhost:4000/graphql?query=%7B%0A%20%20message%0A%7D' -H 'Authorization: Bearer xxxxxxx'
+// curl -X POST http://localhost:4000/graphql -H "Content-Type: application/json" -d '{"query": "{message}"}'
