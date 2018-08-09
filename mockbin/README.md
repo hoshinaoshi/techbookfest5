@@ -1,3 +1,10 @@
+# Usage
+
+```
+redis-server &
+npm start
+```
+
 # Mockbin [![version][npm-version]][npm-url] [![License][npm-license]][license-url]
 
 [![Build Status][travis-image]][travis-url]
