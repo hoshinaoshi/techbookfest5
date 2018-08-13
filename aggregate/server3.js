@@ -21,28 +21,37 @@ var schema = buildSchema(`
   `);
 
 /*
-var taskA = new Promise(function(resolve, reject) {
+var user = new Promise(function(resolve, reject) {
   setTimeout(function () {
     console.log('taskA');
     resolve();
   }, 16);
 });
 
-var taskB = new Promise(function(resolve, reject) {
+var items = new Promise(function(resolve, reject) {
   setTimeout(function () {
     console.log('taskB');
     resolve();
   }, 20);
 });
 
-var before = new Date();
+var result;
 Promise.all([taskA, taskB]).then(function () {
-  var after = new Date();
-  var result = after.getTime() - before.getTime();
   console.log(result);
 });
 */
 
+async function user() {
+  return {a: 1};
+}
+
+async function items() {
+  return {b: 2};
+}
+
+Promise.all([user(), items()]).then(function (result) {
+  console.log(result);
+});
 
 
 var root = {
