@@ -11,6 +11,9 @@
   "dependencies": {
     "express": "^4.16.3",
     "express-graphql": "^0.6.12",
-    "graphql": "^0.13.2"
+    "graphql": "^0.13.2",
+    "https": "^1.0.0",
+    "querystring": "^0.2.0",
+    "request": "^2.88.0"
   }
 }
