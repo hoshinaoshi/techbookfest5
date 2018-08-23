@@ -42,50 +42,16 @@ Promise.all([taskA, taskB]).then(function () {
   console.log(result);
 });
 */
-async function user2() {
-  var qs = require("querystring");
-  var http = require("https");
-
-  var options = {
-    "method": "POST",
-    "hostname": "requestloggerbin.herokuapp.com",
-    "port": null,
-    "path": "/bin/57e23c59-cf67-41b2-8e37-31e49c852cf2?foo=bar&foo=baz",
-    "headers": {
-      "cookie": "foo=bar; bar=baz",
-      "accept": "application/json",
-      "content-type": "application/x-www-form-urlencoded"
-    }
-  };
-
-  var req = http.request(options, function (res) {
-    var chunks = [];
-
-    res.on("data", function (chunk) {
-      chunks.push(chunk);
-    });
-
-    res.on("end", function () {
-      var body = Buffer.concat(chunks);
-      console.log(body.toString());
-    });
-  });
-
-  req.write(qs.stringify({ foo: 'bar', bar: 'baz' }));
-  console.log("aaa")
-  req.end();
-  console.log("bbb")
-}
-
+/*
 async function user() {
-  var request = require("request");
+  var request = require("sync-request");
 
   var jar = request.jar();
-  jar.setCookie(request.cookie("foo=bar"), "https://requestloggerbin.herokuapp.com/bin/57e23c59-cf67-41b2-8e37-31e49c852cf2");
-  jar.setCookie(request.cookie("bar=baz"), "https://requestloggerbin.herokuapp.com/bin/57e23c59-cf67-41b2-8e37-31e49c852cf2");
+  jar.setCookie(request.cookie("foo=bar"), "https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14/view");
+  jar.setCookie(request.cookie("bar=baz"), "https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14/view");
 
   var options = { method: 'POST',
-    url: 'https://requestloggerbin.herokuapp.com/bin/57e23c59-cf67-41b2-8e37-31e49c852cf2',
+    url: 'https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14/view',
     qs: { foo: [ 'bar', 'baz' ] },
     headers: 
     { 'content-type': 'application/x-www-form-urlencoded',
@@ -97,16 +63,51 @@ async function user() {
     return body
   });
 }
+*/
 
 async function items() {
+  console.log("aaaaaa")
   return [{test: 1, ex: "bb"}];
 }
 
+async function user() {
+  var request = require('sync-request');
+  var returnCode;
+  var getUrl = 'https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14/view';
+
+  function httpGet(url){
+    var response = request(
+      'GET',
+      url
+    );
+    return response.body;
+  }
+  
+  var options = { method: 'POST',
+    url: 'https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14/view',
+    qs: { foo: [ 'bar', 'baz' ] },
+    headers: 
+    { 'content-type': 'application/x-www-form-urlencoded',
+      accept: 'application/json' },
+    form: { foo: 'bar', bar: 'baz' },
+    jar: 'JAR' };
+  async function httpGet2(){
+    var request = require('sync-request');
+    return request('GET', 'https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14/view', options);
+  }
+  var res = await httpGet2()
+
+  // returnCode = httpGet(getUrl);
+  returnCode = JSON.parse(JSON.parse(res.getBody('utf8'))["content"]["text"])
+  console.log(returnCode)
+  return returnCode
+}
+
+
 async function top_data() {
-  return  {user: await user(), items: await items()}
-  /*
+  //return  {user: user(), items: items()}
   var returnHash = {}
-  Promise.all([await user(), await items()]).then(function (results) {
+  Promise.all([user(), items()]).then(function (results) {
     results.forEach(function(result){
       for(key in result){
         returnHash[key] = result[key]
@@ -115,7 +116,6 @@ async function top_data() {
     console.log(returnHash)
   });
   return returnHash
-  */
    // return {user: {id:1, name: "a"}, items: [{test:1, ex:"bb"}]}
 }
 
