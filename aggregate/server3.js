@@ -1,6 +1,8 @@
 var express = require('express');
 var express_graphql = require('express-graphql');
 var { buildSchema } = require('graphql');
+var request = require('sync-request');
+
 // GraphQL schema
 var schema = buildSchema(`
   type Query {
@@ -9,8 +11,8 @@ var schema = buildSchema(`
     item: Item
   },
   type Item {
-    test: Int
-    ex: String
+    user_id: Int
+    title: String
   },
   type User {
     id: Int
@@ -22,90 +24,30 @@ var schema = buildSchema(`
   }
   `);
 
-/*
-var user = new Promise(function(resolve, reject) {
-  setTimeout(function () {
-    console.log('taskA');
-    resolve();
-  }, 16);
-});
-
-var items = new Promise(function(resolve, reject) {
-  setTimeout(function () {
-    console.log('taskB');
-    resolve();
-  }, 20);
-});
-
-var result;
-Promise.all([taskA, taskB]).then(function () {
-  console.log(result);
-});
-*/
-/*
-async function user() {
-  var request = require("sync-request");
-
-  var jar = request.jar();
-  jar.setCookie(request.cookie("foo=bar"), "https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14/view");
-  jar.setCookie(request.cookie("bar=baz"), "https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14/view");
-
-  var options = { method: 'POST',
-    url: 'https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14/view',
-    qs: { foo: [ 'bar', 'baz' ] },
-    headers: 
-    { 'content-type': 'application/x-www-form-urlencoded',
-      accept: 'application/json' },
-    form: { foo: 'bar', bar: 'baz' },
-    jar: 'JAR' };
-  request(options, function (error, response, body) {
-    if (error) throw new Error(error);
-    return body
-  });
+async function httpRequest(method, url) {
+  var options = { 
+    method: method,
+    url: url,
+    headers: { 
+      'content-type': 'application/x-www-form-urlencoded',
+      accept: 'application/json'
+    },
+  };
+  return request(method, url, options);
 }
-*/
 
 async function items() {
-  console.log("aaaaaa")
-  return [{test: 1, ex: "bb"}];
+  var response = await httpRequest("GET", "https://requestloggerbin.herokuapp.com/bin/bf985753-3191-47f1-b014-9324d1126aa8")
+  return { items: JSON.parse(response.getBody('utf8')) }
 }
 
 async function user() {
-  var request = require('sync-request');
-  var returnCode;
-  var getUrl = 'https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14/view';
-
-  function httpGet(url){
-    var response = request(
-      'GET',
-      url
-    );
-    return response.body;
-  }
-  
-  var options = { method: 'POST',
-    url: 'https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14/view',
-    qs: { foo: [ 'bar', 'baz' ] },
-    headers: 
-    { 'content-type': 'application/x-www-form-urlencoded',
-      accept: 'application/json' },
-    form: { foo: 'bar', bar: 'baz' },
-    jar: 'JAR' };
-  async function httpGet2(){
-    var request = require('sync-request');
-    return request('GET', 'https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14/view', options);
-  }
-  var res = await httpGet2()
-
-  // returnCode = httpGet(getUrl);
-  returnCode = JSON.parse(JSON.parse(res.getBody('utf8'))["content"]["text"])
-  console.log(returnCode)
-  return returnCode
+  var response = await httpRequest("GET", "https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14")
+  return { user: JSON.parse(response.getBody('utf8')) }
 }
 
 
 async function top_data() {
-  //return  {user: user(), items: items()}
   var returnHash = {}
   Promise.all([user(), items()]).then(function (results) {
     results.forEach(function(result){
@@ -113,38 +55,14 @@ async function top_data() {
         returnHash[key] = result[key]
       }
     });
-    console.log(returnHash)
   });
   return returnHash
-   // return {user: {id:1, name: "a"}, items: [{test:1, ex:"bb"}]}
+  // return { user: { id:1, name: "name"}, items: [ { user_id: 1, title: "example" } ] }
 }
-
-/*
-function timer(ms, name) {
-  //console.log(`name: ${name} start!`)
-  return new Promise((resolve, reject) => {
-    setTimeout(() => resolve(name), ms)
-  })
-}
-
-(async () => {
-  const p1 = timer(1000, 'a')
-  const p2 = timer(1000, 'b')
-  const [result1, result2] = [await p1, await p2]
-  //console.log(result1, result2)
-})()
-*/
 
 var root = {
   top: top_data()
 };
-/*
-var root = {
-  top: {user: {id: 1, name: "aa"}, items: [{test: 1, ex: "bb"}]}
-};
-*/
-
-console.log(root)
 
 // Create an express server and a GraphQL endpoint
 var app = express();
