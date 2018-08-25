@@ -11,8 +11,8 @@ var schema = buildSchema(`
     item: Item
   },
   type Item {
-    test: Int
-    ex: String
+    user_id: Int
+    title: String
   },
   type User {
     id: Int
@@ -33,18 +33,17 @@ async function httpRequest(method, url) {
       accept: 'application/json'
     },
   };
-  var response = request(method, url, options);
-
-  return JSON.parse(JSON.parse(response.getBody('utf8'))["content"]["text"])
+  return request(method, url, options);
 }
 
 async function items() {
-  return { items: [{test: 1, ex: "bb"}] }
+  var response = await httpRequest("GET", "https://requestloggerbin.herokuapp.com/bin/bf985753-3191-47f1-b014-9324d1126aa8")
+  return { items: JSON.parse(response.getBody('utf8')) }
 }
 
 async function user() {
-  var user_data = await httpRequest("GET", "https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14/view")
-  return { user: user_data }
+  var response = await httpRequest("GET", "https://requestloggerbin.herokuapp.com/bin/d20aa466-fa08-4249-a8d3-cfe633fafd14")
+  return { user: JSON.parse(response.getBody('utf8')) }
 }
 
 
@@ -58,7 +57,7 @@ async function top_data() {
     });
   });
   return returnHash
-  // return { user: { id:1, name: "a"}, items: [ { test:1, ex: "bb" } ] }
+  // return { user: { id:1, name: "name"}, items: [ { user_id: 1, title: "example" } ] }
 }
 
 var root = {
