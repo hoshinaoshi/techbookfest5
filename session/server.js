@@ -25,7 +25,7 @@ app.use(session({
 
 app.get('/cart', function (req, res) {
   var items = []
-  redisClient.lrange(ACCESS_ID, 0, 10, function(err, reply) {
+  redisClient.lrange(req.cookies.access_id, 0, 10, function(err, reply) {
     res.send('items: ' + reply);
   });
 });
