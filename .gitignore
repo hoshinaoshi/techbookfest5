@@ -1,3 +1,5 @@
 */node_modules
 */*.swp
 */dump.rdb
+*/tmp
+*/images
