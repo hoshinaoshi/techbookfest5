@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>WebSocketを使おう</title>
+  </head>
+  <body>
+    <h1>Chatアプリ</h1>
+    <form id='form'>
+      <input id="chat" />
+      <button>送信</button>
+    </form>
+    <ul id="messages"></ul>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+var form = document.getElementById('form');
+var chat = document.getElementById('chat');
+var messages = document.getElementById('messages');
+
+form.addEventListener('submit', function (e) {
+  // websocketを使うのでフォームの送信をキャンセル
+  e.preventDefault();
+
+  // イベントを発火しデータを受け渡す
+  socket.emit('chat', chat.value);
+  chat.value = '';
+});
+
+// サーバ側からchatイベントを待ち受ける
+socket.on('chat', function (msg) {
+  var li = document.createElement('li');
+  li.textContent = msg;
+  messages.appendChild(li);
+});
+    </script>
+  </body>
+</html>
