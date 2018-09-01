@@ -1,11 +1,26 @@
+// execute "redis-server" when before start this script
 var express = require('express');
 var app = express();
 var session = require('express-session');
 var RedisStore = require('connect-redis')(session);
 var cookieParser = require('cookie-parser')
+var request = require('sync-request');
 var redis = require('redis');
 var redisClient = redis.createClient();
 const ACCESS_ID = 0123456789;
+
+function httpRequest(method, url, body) {
+  var options = {
+    method: method,
+    url: url,
+    body: body,
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded',
+      accept: 'application/json'
+    },
+  };
+  return request(method, url, options);
+}
 
 app.use(cookieParser());
 
@@ -23,6 +38,19 @@ app.use(session({
   }
 }));
 
+app.get('/', function (req, res) {
+  var access_id = ACCESS_ID //req.cookies.access_id || Math.random() * 100000000000000000;
+  res.cookie('access_id', access_id , { maxAge:60000, httpOnly:false } );
+
+  res.send('access_id: ' + access_id);
+});
+
+// curl -X POST http://localhost:3000/cart/items/:id
+app.post('/cart/items/:id', function (req, res) {
+  var id = req.params.id;
+  redisClient.lpush(ACCESS_ID, id, redis.print)
+});
+
 app.get('/cart', function (req, res) {
   var items = []
   redisClient.lrange(req.cookies.access_id, 0, 10, function(err, reply) {
@@ -30,18 +58,19 @@ app.get('/cart', function (req, res) {
   });
 });
 
-// curl -X POST http://localhost:3000/items/1
-app.post('/items/:id', function (req, res) {
-  var id = req.params.id;
-  redisClient.lpush(ACCESS_ID, id, redis.print)
-});
-
-
-app.get('/', function (req, res) {
-  var access_id = ACCESS_ID //req.cookies.access_id || Math.random() * 100000000000000000;
-  res.cookie('access_id', access_id , { maxAge:60000, httpOnly:false } );
-
-  res.send('access_id: ' + access_id);
+// curl -X POST http://localhost:3000/checkout
+app.post('/checkout', function (req, res) {
+  redisClient.lrange(req.cookies.access_id, 0, 10, function(err, reply) {
+    httpRequest(
+      "POST",
+      "https://requestloggerbin.herokuapp.com/bin/bf985753-3191-47f1-b014-9324d1126aa8",
+      Buffer.alloc(
+        128,
+        reply
+      )
+    )
+  });
+  redisClient.del(ACCESS_ID);
 });
 
 app.listen(3000);
