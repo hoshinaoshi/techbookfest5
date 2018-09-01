@@ -10,10 +10,10 @@ const ACCESS_ID = 0123456789;
 app.use(cookieParser());
 
 app.use(session({
-  secret: 'secret',  // Secret Keyで暗号化し、改ざんを防ぐ
+  secret: 'secret',
   resave: false,
   saveUninitialized: true,
-  store: new RedisStore({  // Redisの設定
+  store: new RedisStore({
     host: '127.0.0.1',
     port: 6379,
     prefix: 'sid:'
@@ -30,6 +30,7 @@ app.get('/cart', function (req, res) {
   });
 });
 
+// curl -X POST http://localhost:3000/items/1
 app.post('/items/:id', function (req, res) {
   var id = req.params.id;
   redisClient.lpush(ACCESS_ID, id, redis.print)
