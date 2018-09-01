@@ -5,7 +5,7 @@ const Html = props => {
   return (
     <html>
       <head>
-        <title>App</title>
+        <title>SPA + SSR App</title>
       </head>
       <body>
         <div id="app">{renderRoutes(props.route.routes)}</div>

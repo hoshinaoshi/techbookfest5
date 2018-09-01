@@ -15,7 +15,7 @@ router.get('*', (req, res) => {
 
   ReactDOMServer.renderToNodeStream(
     <StaticRouter location={req.url} context={context}>
-    {renderRoutes(routes)}
+      {renderRoutes(routes)}
     </StaticRouter>
   ).pipe(res);
 });

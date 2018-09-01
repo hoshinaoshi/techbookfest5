@@ -12,7 +12,7 @@ const store = configureStore();
 
 ReactDOM.hydrate(
   <Provider store={store}>
-  <BrowserRouter>{renderRoutes(Routes)}</BrowserRouter>
+    <BrowserRouter>{renderRoutes(Routes)}</BrowserRouter>
   </Provider>,
   document.getElementById('app')
 );
