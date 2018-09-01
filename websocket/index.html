@@ -3,6 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <title>WebSocketを使おう</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
   </head>
   <body>
     <h1>Chatアプリ</h1>
@@ -16,49 +18,45 @@
 
     <ul id="messages"></ul>
     <form action="#" id="chatForm">
-      <input id="m" autocomplete="off" />
-      <button>Send</button>
+      <input id="sendMessage" autocomplete="off" />
+      <button>送信</button>
     </form>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       var socket = io();
-      var userName = '';
+      var userName = "";
+      // ログイン処理
       $(function () {
-        // メッセージを送信する
-        $('form').submit(function(){
-          socket.emit('message', $('#m').val());
-          $('#m').val('');
-          return false;
-        });
+        $("#loginForm").show();
+        $("#chatForm").hide();
 
-        // 受信したメッセージを表示
-        socket.on('message', function(data){
-          var chat = data.userName + " : " + data.message;
-          $('#messages').append($('<li>').text(chat));
-        });
-      });
-
-      $(function () {
-        // ログイン画面表示
-        $('#loginForm').show();
-        $('#chatForm').hide();
-
-        // ログイン処理
-        $('#btnLogin').on('click', function (e) {
-          userName = $('#username').val();
+        $("#btnLogin").on("click", function (e) {
+          userName = $("#username").val();
           if (userName) {
-            // チャット画面表示
-            $('#loginForm').hide();
-            $('#chatForm').show();
-            // ユーザ情報をサーバへ通知する
-            socket.emit('login', {
+
+            $("#loginForm").hide();
+            $("#chatForm").show();
+
+            socket.emit("login", {
               userID: socket.id,
               userName: userName
             });
           }
           e.preventDefault();
+        });
+      });
+
+      // メッセージ処理
+      $(function () {
+        $("#chatForm").submit(function(){
+          socket.emit("message", $("#sendMessage").val());
+          $("#sendMessage").val("");
+          return false;
+        });
+
+        socket.on("message", function(data){
+          var chat = data.userName + " : " + data.message;
+          $("#messages").append($("<li>").text(chat));
         });
       });
     </script>

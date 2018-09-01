@@ -8,14 +8,14 @@ app.get('/', (req, res) => {
 
 io.on('connection', function(socket){
 
-  var loginUsers = []; //ログインユーザ
+  var loginUsers = [];
 
   // ログイン処理
   socket.on('login', function(userInfo){
     loginUsers[userInfo.userID] = userInfo.userName;
   });
 
-  // メッセージ送信処理
+  // メッセージ処理
   socket.on('message', function(msg){
     userName = loginUsers[socket.id];
     io.emit('message', {
