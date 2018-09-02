@@ -3,6 +3,7 @@ var app = express()
 var AWS = require('aws-sdk');
 var bodyParser = require('body-parser');
 var fs = require('fs');
+var request = require('sync-request');
 
 var multiparty = require('connect-multiparty'),
 multipartyMiddleware = multiparty();
@@ -21,6 +22,19 @@ app.get('/', function (req, res) {
 
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
+
+function httpRequest(method, url, body) {
+  var options = { 
+    method: method,
+    url: url,
+    body: body,
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded',
+      accept: 'application/json'
+    },  
+  };  
+  return request(method, url, options);
+}
 
 app.post('/upload', multipartyMiddleware, function (req, res) {
   var s3 = new AWS.S3();
@@ -101,6 +115,11 @@ app.post('/upload', multipartyMiddleware, function (req, res) {
         var delta = (new Date() - startTime) / 1000;
         console.log('Completed upload in', delta, 'seconds');
         console.log('Final upload data:', data);
+        httpRequest(
+          "POST",
+          "https://requestloggerbin.herokuapp.com/bin/bf985753-3191-47f1-b014-9324d1126aa8",
+          Buffer.alloc(128, data)
+        )
       });
     }).on('httpUploadProgress', function(progress) {
       console.log(Math.round(progress.loaded/progress.total*100)+ '% done')
