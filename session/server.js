@@ -7,7 +7,7 @@ var cookieParser = require('cookie-parser')
 var request = require('sync-request');
 var redis = require('redis');
 var redisClient = redis.createClient();
-const ACCESS_ID = 0123456789;
+const SESSION_ID = 0123456789;
 
 function httpRequest(method, url, body) {
   var options = {
@@ -39,7 +39,7 @@ app.use(session({
 }));
 
 app.get('/', function (req, res) {
-  var access_id = ACCESS_ID //req.cookies.access_id || Math.random() * 100000000000000000;
+  var access_id = SESSION_ID //req.cookies.access_id || Math.random() * 100000000000000000;
   res.cookie('access_id', access_id , { maxAge:60000, httpOnly:false } );
 
   res.send('access_id: ' + access_id);
@@ -48,7 +48,7 @@ app.get('/', function (req, res) {
 // curl -X POST http://localhost:3000/cart/items/:id
 app.post('/cart/items/:id', function (req, res) {
   var id = req.params.id;
-  redisClient.lpush(ACCESS_ID, id, redis.print)
+  redisClient.lpush(SESSION_ID, id, redis.print)
 });
 
 app.get('/cart', function (req, res) {
@@ -70,7 +70,7 @@ app.post('/checkout', function (req, res) {
       )
     )
   });
-  redisClient.del(ACCESS_ID);
+  redisClient.del(SESSION_ID);
 });
 
 app.listen(3000);
