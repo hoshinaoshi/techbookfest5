@@ -22,7 +22,7 @@ var schema = buildSchema(`
     user: User
     items: [Item]
   }
-  `);
+`);
 
 async function httpRequest(method, url) {
   var options = { 
