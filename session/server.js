@@ -40,10 +40,10 @@ app.use(session({
 }));
 
 app.get('/', function (req, res) {
-  var access_id = SESSION_ID //req.cookies.access_id || Math.random() * 100000000000000000;
-  res.cookie('access_id', access_id , { maxAge:60000, httpOnly:false } );
+  var session_id = SESSION_ID //req.cookies.session_id || Math.random() * 100000000000000000;
+  res.cookie('session_id', session_id , { maxAge:60000, httpOnly:false } );
 
-  res.send('access_id: ' + access_id);
+  res.send('session_id: ' + session_id);
 });
 
 // curl -X POST http://localhost:3000/cart/items/:id
@@ -54,14 +54,14 @@ app.post('/cart/items/:id', function (req, res) {
 
 app.get('/cart', function (req, res) {
   var items = []
-  redisClient.lrange(req.cookies.access_id, 0, 10, function(err, reply) {
+  redisClient.lrange(req.cookies.session_id, 0, 10, function(err, reply) {
     res.send('items: ' + reply);
   });
 });
 
 // curl -X POST http://localhost:3000/checkout
 app.post('/checkout', function (req, res) {
-  redisClient.lrange(req.cookies.access_id, 0, 10, function(err, reply) {
+  redisClient.lrange(req.cookies.session_id, 0, 10, function(err, reply) {
     httpRequest(
       "POST",
       "https://requestloggerbin.herokuapp.com/bin/bf985753-3191-47f1-b014-9324d1126aa8",
