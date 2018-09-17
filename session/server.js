@@ -1,12 +1,13 @@
 // execute "redis-server" when before start this script
-var express = require('express');
-var app = express();
-var session = require('express-session');
-var RedisStore = require('connect-redis')(session);
+var express      = require('express');
+var session      = require('express-session');
+var RedisStore   = require('connect-redis')(session);
 var cookieParser = require('cookie-parser')
-var request = require('sync-request');
-var redis = require('redis');
-var redisClient = redis.createClient();
+var request      = require('sync-request');
+var redis        = require('redis');
+var redisClient  = redis.createClient();
+var app = express();
+
 const SESSION_ID = 0123456789;
 
 function httpRequest(method, url, body) {
