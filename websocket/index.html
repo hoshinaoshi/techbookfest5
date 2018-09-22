@@ -48,12 +48,14 @@
 
       // メッセージ処理
       $(function () {
+        // 送信
         $("#chatForm").submit(function(){
           socket.emit("message", $("#sendMessage").val());
           $("#sendMessage").val("");
           return false;
         });
 
+        // 受信
         socket.on("message", function(data){
           var chat = data.userName + " : " + data.message;
           $("#messages").append($("<li>").text(chat));
