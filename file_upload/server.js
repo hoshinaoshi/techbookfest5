@@ -126,7 +126,7 @@ app.post('/upload', multipartyMiddleware, function (req, res) {
     });
   }
 
-  res.send("complute");
+  res.send("complete");
 })
 
 app.listen(3000)
