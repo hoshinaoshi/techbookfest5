@@ -4,14 +4,7 @@ import axios from 'axios'
 import Link from 'next/link' 
 
 export default class Index extends Component {
-  constructor() {
-    super();
-    this.state = {
-      statusCode: "",
-      statusText: ""
-    };
-  }
-  async componentDidMount() {
+  static async getInitialProps({ req }) {
     const options = {
       headers: {
         "Access-Control-Allow-Origin": "*",
@@ -19,15 +12,12 @@ export default class Index extends Component {
         accept: 'application/json'
       }
     };
-    await axios.get('http://mockbin.com/headers', options)
-      .then(response => {
-        this.setState(
-          {
-            statusCode: response.status,
-            statusText: response.statusText
-          }
-        )
-      })
+    const res = await axios.get('http://mockbin.com/headers', options)
+    return { statusCode: res.status, statusText: res.statusText, isServer: !!req };
+  }
+
+  constructor(props) {
+    super(props);
   }
   render() {
     return (
@@ -38,8 +28,9 @@ export default class Index extends Component {
           </Link>
           <p>Hello Next.js</p>
         </div> 
-        API status code: {this.state.statusCode}<br />
-        API status text: {this.state.statusText}
+        API status code: {this.props.statusCode}<br />
+        API status text: {this.props.statusText}<br />
+        isServer: {String(this.props.isServer)}
       </div>
     );
   }
