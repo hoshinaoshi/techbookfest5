@@ -1,7 +1,7 @@
-import 'babel-polyfill';
 import React, { Component } from 'react';
-import axios from 'axios'
 import Link from 'next/link' 
+import axios from 'axios'
+import 'babel-polyfill';
 
 export default class Index extends Component {
   static async getInitialProps({ req }) {
